@@ -44,6 +44,21 @@
       display: inline-block;
       font-size: 1.1rem;
     }
+    .initial-investment {
+      color: #f55;
+      font-size: 1.2rem;
+      margin-top: 0.5rem;
+    }
+    .profit-loss {
+      font-size: 1.3rem;
+      margin-top: 0.5rem;
+    }
+    .gain {
+      color: #0f0;
+    }
+    .loss {
+      color: #f55;
+    }
   </style>
 </head>
 <body>
@@ -51,6 +66,8 @@
   <h1>Portfolio Cripto</h1>
 
   <div class="total" id="total">Total: -</div>
+  <div class="initial-investment" id="initial">Inversión inicial: $213,292</div>
+  <div class="profit-loss" id="percentage"></div>
 
   <div class="section">
     <div class="section-title">Capital Alex invertido (inversión solo 2025)</div>
@@ -107,6 +124,8 @@
       elena: 0.0027
     };
 
+    const inversionInicial = 213292;
+
     async function fetchPrices() {
       const url = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,solana,cardano,ripple,stellar,neo&vs_currencies=usd';
       try {
@@ -128,6 +147,15 @@
           total += holdings[key] * prices[key];
         }
         document.getElementById('total').innerText = `Total del portafolio: $${total.toFixed(2)}`;
+
+        // Mostrar ganancia/pérdida
+        const ganancia = total - inversionInicial;
+        const porcentaje = ((ganancia / inversionInicial) * 100).toFixed(2);
+        const esGanancia = ganancia >= 0;
+        const texto = esGanancia
+          ? `<span class="gain">Ganancia de ${porcentaje}%</span>`
+          : `<span class="loss">Pérdida de ${Math.abs(porcentaje)}%</span>`;
+        document.getElementById('percentage').innerHTML = texto;
 
         // Capital Alex
         let alexHTML = '';
