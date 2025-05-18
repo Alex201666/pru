@@ -38,6 +38,12 @@
       color: #aaa;
       font-size: 0.95rem;
     }
+    .distribution {
+      margin-top: 1rem;
+      text-align: left;
+      display: inline-block;
+      font-size: 1.1rem;
+    }
   </style>
 </head>
 <body>
@@ -47,7 +53,7 @@
   <div class="total" id="total">Total: -</div>
 
   <div class="section">
-    <div class="section-title">Capital de Alex</div>
+    <div class="section-title">Capital Alex invertido (inversión solo 2025)</div>
     <div id="alex"></div>
     <div class="total" id="alexTotal"></div>
   </div>
@@ -56,10 +62,11 @@
     <div class="section-title">Capital Familiar</div>
     <div id="familiar"></div>
     <div class="total" id="familiarTotal"></div>
+    <div class="distribution" id="distribution"></div>
   </div>
 
   <div class="section">
-    <div class="section-title">Papá Stellar XLM</div>
+    <div class="section-title">Papá Stellar XLM (inversión solo 2025)</div>
     <div id="papa"></div>
     <div class="total" id="papaTotal"></div>
   </div>
@@ -93,6 +100,13 @@
       xlm: { amount: 10231.5 }
     };
 
+    const porcentajes = {
+      alex: 0.8748,
+      papa: 0.1005,
+      mama: 0.022,
+      elena: 0.0027
+    };
+
     async function fetchPrices() {
       const url = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,solana,cardano,ripple,stellar,neo&vs_currencies=usd';
       try {
@@ -108,14 +122,14 @@
           neo: data.neo.usd
         };
 
-        // Calcular total general
+        // Total general
         let total = 0;
         for (let key in holdings) {
           total += holdings[key] * prices[key];
         }
         document.getElementById('total').innerText = `Total del portafolio: $${total.toFixed(2)}`;
 
-        // Alex
+        // Capital Alex
         let alexHTML = '';
         let alexTotal = 0;
         for (let key in alexHoldings) {
@@ -133,7 +147,7 @@
         document.getElementById('alex').innerHTML = alexHTML;
         document.getElementById('alexTotal').innerText = `Total Alex: $${alexTotal.toFixed(2)}`;
 
-        // Familiar
+        // Capital Familiar
         let famHTML = '';
         let famTotal = 0;
         for (let key in familiarHoldings) {
@@ -147,7 +161,17 @@
         document.getElementById('familiar').innerHTML = famHTML;
         document.getElementById('familiarTotal').innerText = `Total Familiar: $${famTotal.toFixed(2)}`;
 
-        // Papá Stellar XLM
+        // Porcentajes del Capital Familiar
+        const distHTML = `
+          <div><strong>Distribución del capital familiar:</strong></div>
+          <div>Alex (87.48%): $${(famTotal * porcentajes.alex).toFixed(2)}</div>
+          <div>Papá (10.05%): $${(famTotal * porcentajes.papa).toFixed(2)}</div>
+          <div>Mamá (2.20%): $${(famTotal * porcentajes.mama).toFixed(2)}</div>
+          <div>Elena (0.27%): $${(famTotal * porcentajes.elena).toFixed(2)}</div>
+        `;
+        document.getElementById('distribution').innerHTML = distHTML;
+
+        // Papá XLM
         const xlmAmount = papaHoldings.xlm.amount;
         const xlmPrice = prices.xlm;
         const xlmValue = xlmAmount * xlmPrice;
