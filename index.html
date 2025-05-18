@@ -13,16 +13,30 @@
     }
     h1 {
       font-size: 2.5rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .section {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #444;
+    }
+    .section-title {
+      font-size: 1.8rem;
+      color: #0ff;
+      margin-bottom: 1rem;
     }
     .crypto {
-      font-size: 1.2rem;
-      margin: 0.5rem 0;
+      font-size: 1.1rem;
+      margin: 0.3rem 0;
     }
     .total {
-      font-size: 1.8rem;
-      margin-top: 2rem;
-      color: #0ff;
+      font-size: 1.5rem;
+      margin-top: 1rem;
+      color: #0f0;
+    }
+    .buy-price {
+      color: #aaa;
+      font-size: 0.95rem;
     }
   </style>
 </head>
@@ -30,8 +44,19 @@
 
   <h1>Portfolio Cripto</h1>
 
-  <div id="cryptos"></div>
   <div class="total" id="total">Total: -</div>
+
+  <div class="section">
+    <div class="section-title">Capital de Alex</div>
+    <div id="alex"></div>
+    <div class="total" id="alexTotal"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Capital Familiar</div>
+    <div id="familiar"></div>
+    <div class="total" id="familiarTotal"></div>
+  </div>
 
   <script>
     const holdings = {
@@ -41,6 +66,21 @@
       xrp: 16600,
       xlm: 159471,
       neo: 187.2
+    };
+
+    const alexHoldings = {
+      eth: { amount: 5.05415, buyPrice: 2129 },
+      neo: { amount: 187.2, buyPrice: 5.34 },
+      ada: { amount: 14893, buyPrice: 0.86 },
+      xrp: { amount: 314, buyPrice: 1.66 },
+      xlm: { amount: 10231.5 }
+    };
+
+    const familiarHoldings = {
+      sol: 326.304,
+      ada: 9641,
+      xrp: 16286,
+      xlm: 139008
     };
 
     async function fetchPrices() {
@@ -58,23 +98,44 @@
           neo: data.neo.usd
         };
 
+        // Calcular total general
         let total = 0;
-        const container = document.getElementById('cryptos');
-        container.innerHTML = '';
-
         for (let key in holdings) {
-          const amount = holdings[key];
+          total += holdings[key] * prices[key];
+        }
+        document.getElementById('total').innerText = `Total del portafolio: $${total.toFixed(2)}`;
+
+        // Desglose de Alex
+        let alexHTML = '';
+        let alexTotal = 0;
+        for (let key in alexHoldings) {
+          const amount = alexHoldings[key].amount;
           const price = prices[key];
           const value = amount * price;
-          total += value;
+          alexTotal += value;
 
-          const div = document.createElement('div');
-          div.className = 'crypto';
-          div.innerHTML = `${key.toUpperCase()}: ${amount} × $${price.toFixed(2)} = <strong>$${value.toFixed(2)}</strong>`;
-          container.appendChild(div);
+          const buy = alexHoldings[key].buyPrice
+            ? `<div class="buy-price">Compra: ${amount} × $${alexHoldings[key].buyPrice.toFixed(2)}</div>`
+            : '';
+
+          alexHTML += `<div class="crypto">${key.toUpperCase()}: ${amount} × $${price.toFixed(2)} = <strong>$${value.toFixed(2)}</strong>${buy}</div>`;
         }
+        document.getElementById('alex').innerHTML = alexHTML;
+        document.getElementById('alexTotal').innerText = `Total Alex: $${alexTotal.toFixed(2)}`;
 
-        document.getElementById('total').innerText = `Total del portafolio: $${total.toFixed(2)}`;
+        // Desglose Familiar
+        let famHTML = '';
+        let famTotal = 0;
+        for (let key in familiarHoldings) {
+          const amount = familiarHoldings[key];
+          const price = prices[key];
+          const value = amount * price;
+          famTotal += value;
+
+          famHTML += `<div class="crypto">${key.toUpperCase()}: ${amount} × $${price.toFixed(2)} = <strong>$${value.toFixed(2)}</strong></div>`;
+        }
+        document.getElementById('familiar').innerHTML = famHTML;
+        document.getElementById('familiarTotal').innerText = `Total Familiar: $${famTotal.toFixed(2)}`;
 
       } catch (error) {
         document.getElementById('total').innerText = 'Error al obtener datos';
@@ -83,7 +144,7 @@
     }
 
     fetchPrices();
-    setInterval(fetchPrices, 60000); // Actualizar cada minuto
+    setInterval(fetchPrices, 60000); // actualizar cada minuto
   </script>
 
 </body>
