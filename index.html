@@ -13,24 +13,16 @@
     }
     h1 {
       font-size: 2.5rem;
-      margin-bottom: 1rem;
-    }
-    .section-title {
-      font-size: 1.8rem;
-      margin-top: 2rem;
-      margin-bottom: 1rem;
-      color: #0ff;
-    }
-    .summary {
-      font-size: 1.5rem;
-      margin: 0.5rem 0;
+      margin-bottom: 2rem;
     }
     .crypto {
-      font-size: 1.1rem;
-      margin: 0.3rem 0;
+      font-size: 1.2rem;
+      margin: 0.5rem 0;
     }
-    .label {
-      color: #aaa;
+    .total {
+      font-size: 1.8rem;
+      margin-top: 2rem;
+      color: #0ff;
     }
   </style>
 </head>
@@ -38,23 +30,8 @@
 
   <h1>Portfolio Cripto</h1>
 
-  <div class="summary" id="total">Total: -</div>
-  <div class="summary" id="alex">Capital de Alex: -</div>
-  <div class="summary" id="familiar">Capital Familiar: -</div>
-
-  <div class="section-title">Desglose de Criptomonedas</div>
-  <div class="crypto" id="eth"></div>
-  <div class="crypto" id="sol"></div>
-  <div class="crypto" id="ada"></div>
-  <div class="crypto" id="xrp"></div>
-  <div class="crypto" id="xlm"></div>
-  <div class="crypto" id="neo"></div>
-
-  <div class="section-title">Distribución Familiar</div>
-  <div class="summary" id="hijo"></div>
-  <div class="summary" id="papa"></div>
-  <div class="summary" id="mama"></div>
-  <div class="summary" id="elena"></div>
+  <div id="cryptos"></div>
+  <div class="total" id="total">Total: -</div>
 
   <script>
     const holdings = {
@@ -64,24 +41,6 @@
       xrp: 16600,
       xlm: 159471,
       neo: 187.2
-    };
-
-    const alexHoldings = {
-      eth: { amount: 5.05415, buyPrice: 2129 },
-      neo: { amount: 187.2, buyPrice: 5.34 },
-      ada: { amount: 14893, buyPrice: 0.86 },
-      xrp: { amount: 314, buyPrice: 1.66 },
-      xlm: { amount: 10231.5 } // parte de Alex
-    };
-
-    const papaXLM = 10231.5;
-
-    // Distribución familiar corregida
-    const porcentajes = {
-      hijo: 0.8748,
-      papa: 0.1005,
-      mama: 0.022,
-      elena: 0.0027
     };
 
     async function fetchPrices() {
@@ -100,54 +59,22 @@
         };
 
         let total = 0;
+        const container = document.getElementById('cryptos');
+        container.innerHTML = '';
 
-        // Calcular valor total de cada cripto
         for (let key in holdings) {
           const amount = holdings[key];
           const price = prices[key];
           const value = amount * price;
           total += value;
-          document.getElementById(key).innerHTML =
-            `<span class="label">${key.toUpperCase()}:</span> ${amount} × $${price.toFixed(2)} = <strong>$${value.toFixed(2)}</strong>`;
+
+          const div = document.createElement('div');
+          div.className = 'crypto';
+          div.innerHTML = `${key.toUpperCase()}: ${amount} × $${price.toFixed(2)} = <strong>$${value.toFixed(2)}</strong>`;
+          container.appendChild(div);
         }
 
-        // Restar Papa_XLM y Alex_XLM del total (se desglosan aparte)
-        const xlmExcluded = (papaXLM + alexHoldings.xlm.amount) * prices.xlm;
-        total -= xlmExcluded;
-
-        // Calcular Capital de Alex
-        let alexTotal = 0;
-        for (let key in alexHoldings) {
-          const data = alexHoldings[key];
-          const livePrice = prices[key];
-          const value = data.amount * livePrice;
-
-          if (data.buyPrice) {
-            document.getElementById(key).innerHTML +=
-              ` | <span style="color:#0f0;">Compra: ${data.amount} × $${data.buyPrice.toFixed(2)}</span>`;
-          }
-
-          alexTotal += value;
-        }
-
-        // Calcular Capital Familiar
-        const familiarTotal = total - alexTotal;
-
-        // Cálculo por persona
-        const hijoMonto = familiarTotal * porcentajes.hijo;
-        const papaMonto = familiarTotal * porcentajes.papa;
-        const mamaMonto = familiarTotal * porcentajes.mama;
-        const elenaMonto = familiarTotal * porcentajes.elena;
-
-        // Mostrar resultados
-        document.getElementById('total').innerText = `Total (ajustado): $${total.toFixed(2)}`;
-        document.getElementById('alex').innerText = `Capital de Alex: $${alexTotal.toFixed(2)}`;
-        document.getElementById('familiar').innerText = `Capital Familiar: $${familiarTotal.toFixed(2)}`;
-
-        document.getElementById('hijo').innerText = `Hijo (87.48%): $${hijoMonto.toFixed(2)}`;
-        document.getElementById('papa').innerText = `Papá (10.05%): $${papaMonto.toFixed(2)}`;
-        document.getElementById('mama').innerText = `Mamá (2.2%): $${mamaMonto.toFixed(2)}`;
-        document.getElementById('elena').innerText = `Elena (0.27%): $${elenaMonto.toFixed(2)}`;
+        document.getElementById('total').innerText = `Total del portafolio: $${total.toFixed(2)}`;
 
       } catch (error) {
         document.getElementById('total').innerText = 'Error al obtener datos';
@@ -156,7 +83,7 @@
     }
 
     fetchPrices();
-    setInterval(fetchPrices, 60000); // actualizar cada minuto
+    setInterval(fetchPrices, 60000); // Actualizar cada minuto
   </script>
 
 </body>
