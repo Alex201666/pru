@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Mi Portfolio Cripto</title>
   <style>
     body {
@@ -127,6 +127,7 @@
 
     const inversionInicialFamiliar = 213292;
     const inversionInicialAlex = 26000;
+    const inversionInicialPapa = 2750;
 
     async function fetchPrices() {
       const url = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,solana,cardano,ripple,stellar,neo&vs_currencies=usd';
@@ -213,7 +214,17 @@
         const xlmPrice = prices.xlm;
         const xlmValue = xlmAmount * xlmPrice;
         const papaHTML = `<div class="crypto">XLM: ${xlmAmount} × $${xlmPrice.toFixed(2)} = <strong>$${xlmValue.toFixed(2)}</strong></div>`;
-        document.getElementById('papa').innerHTML = papaHTML;
+        
+        const diffPapa = xlmValue - inversionInicialPapa;
+        const percentPapa = ((diffPapa / inversionInicialPapa) * 100).toFixed(2);
+        const papaDiff = diffPapa >= 0
+          ? `<span class="gain">Ganancia de ${percentPapa}%</span>`
+          : `<span class="loss">Pérdida de ${Math.abs(percentPapa)}%</span>`;
+        
+        document.getElementById('papa').innerHTML = papaHTML + `
+          <div class="initial-investment">Inversión inicial: $${inversionInicialPapa}</div>
+          <div class="profit-loss">${papaDiff}</div>
+        `;
         document.getElementById('papaTotal').innerText = `Total Papá XLM: $${xlmValue.toFixed(2)}`;
 
       } catch (error) {
