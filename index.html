@@ -64,21 +64,22 @@
 <body>
 
   <h1>Portfolio Cripto</h1>
-
   <div class="total" id="total">Total: -</div>
-  <div class="initial-investment" id="initial">Inversión inicial: $213,292</div>
-  <div class="profit-loss" id="percentage"></div>
 
   <div class="section">
     <div class="section-title">Capital Alex invertido (inversión solo 2025)</div>
     <div id="alex"></div>
     <div class="total" id="alexTotal"></div>
+    <div class="initial-investment">Inversión inicial: $26,000</div>
+    <div class="profit-loss" id="alexDiff"></div>
   </div>
 
   <div class="section">
     <div class="section-title">Capital Familiar</div>
     <div id="familiar"></div>
     <div class="total" id="familiarTotal"></div>
+    <div class="initial-investment">Inversión inicial: $213,292</div>
+    <div class="profit-loss" id="familiarDiff"></div>
     <div class="distribution" id="distribution"></div>
   </div>
 
@@ -124,7 +125,8 @@
       elena: 0.0027
     };
 
-    const inversionInicial = 213292;
+    const inversionInicialFamiliar = 213292;
+    const inversionInicialAlex = 26000;
 
     async function fetchPrices() {
       const url = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,solana,cardano,ripple,stellar,neo&vs_currencies=usd';
@@ -148,15 +150,6 @@
         }
         document.getElementById('total').innerText = `Total del portafolio: $${total.toFixed(2)}`;
 
-        // Mostrar ganancia/pérdida
-        const ganancia = total - inversionInicial;
-        const porcentaje = ((ganancia / inversionInicial) * 100).toFixed(2);
-        const esGanancia = ganancia >= 0;
-        const texto = esGanancia
-          ? `<span class="gain">Ganancia de ${porcentaje}%</span>`
-          : `<span class="loss">Pérdida de ${Math.abs(porcentaje)}%</span>`;
-        document.getElementById('percentage').innerHTML = texto;
-
         // Capital Alex
         let alexHTML = '';
         let alexTotal = 0;
@@ -175,6 +168,14 @@
         document.getElementById('alex').innerHTML = alexHTML;
         document.getElementById('alexTotal').innerText = `Total Alex: $${alexTotal.toFixed(2)}`;
 
+        // Comparación inversión inicial Alex
+        const diffAlex = alexTotal - inversionInicialAlex;
+        const percentAlex = ((diffAlex / inversionInicialAlex) * 100).toFixed(2);
+        document.getElementById('alexDiff').innerHTML =
+          diffAlex >= 0
+            ? `<span class="gain">Ganancia de ${percentAlex}%</span>`
+            : `<span class="loss">Pérdida de ${Math.abs(percentAlex)}%</span>`;
+
         // Capital Familiar
         let famHTML = '';
         let famTotal = 0;
@@ -188,6 +189,14 @@
         }
         document.getElementById('familiar').innerHTML = famHTML;
         document.getElementById('familiarTotal').innerText = `Total Familiar: $${famTotal.toFixed(2)}`;
+
+        // Comparación inversión inicial Familiar
+        const diffFam = famTotal - inversionInicialFamiliar;
+        const percentFam = ((diffFam / inversionInicialFamiliar) * 100).toFixed(2);
+        document.getElementById('familiarDiff').innerHTML =
+          diffFam >= 0
+            ? `<span class="gain">Ganancia de ${percentFam}%</span>`
+            : `<span class="loss">Pérdida de ${Math.abs(percentFam)}%</span>`;
 
         // Porcentajes del Capital Familiar
         const distHTML = `
