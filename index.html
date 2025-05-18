@@ -15,10 +15,18 @@
       font-size: 2.5rem;
       margin-bottom: 1rem;
     }
+    #total, #alex, #familiar {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
     #total {
-      font-size: 3rem;
       color: #00ff88;
-      margin-bottom: 2rem;
+    }
+    #alex {
+      color: #0099ff;
+    }
+    #familiar {
+      color: #ffaa00;
     }
     .crypto {
       font-size: 1.2rem;
@@ -32,7 +40,10 @@
 <body>
 
   <h1>Portfolio Cripto</h1>
+
   <div id="total">Cargando...</div>
+  <div id="alex">Capital de Alex: -</div>
+  <div id="familiar">Capital Familiar: -</div>
 
   <div class="crypto" id="eth"></div>
   <div class="crypto" id="sol"></div>
@@ -67,20 +78,39 @@
         };
 
         let total = 0;
+        let alexTotal = 0;
 
         for (let key in holdings) {
           const amount = holdings[key];
           const price = prices[key];
-          const value = amount * price;
-          total += value;
+          let value = amount * price;
+
+          // Mostrar cada cripto
           document.getElementById(key).innerHTML =
             `<span class="label">${key.toUpperCase()}:</span> ${amount} × $${price.toFixed(2)} = <strong>$${value.toFixed(2)}</strong>`;
+
+          total += value;
+
+          // Calcular capital de Alex
+          if (key === 'eth' || key === 'neo') {
+            alexTotal += value;
+          }
+          if (key === 'ada') {
+            const adaAlex = 14500;
+            alexTotal += adaAlex * price;
+          }
         }
 
+        const familiarTotal = total - alexTotal;
+
         document.getElementById('total').innerText = `Total: $${total.toFixed(2)}`;
+        document.getElementById('alex').innerText = `Capital de Alex: $${alexTotal.toFixed(2)}`;
+        document.getElementById('familiar').innerText = `Capital Familiar: $${familiarTotal.toFixed(2)}`;
 
       } catch (error) {
         document.getElementById('total').innerText = 'Error al obtener datos';
+        document.getElementById('alex').innerText = '-';
+        document.getElementById('familiar').innerText = '-';
         console.error('Error al consultar CoinGecko:', error);
       }
     }
