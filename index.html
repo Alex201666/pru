@@ -71,10 +71,18 @@
       neo: { amount: 187.2, buyPrice: 5.34 },
       ada: { amount: 14893, buyPrice: 0.86 },
       xrp: { amount: 314, buyPrice: 1.66 },
-      xlm: { amount: 9190.5 } // parte de XLM de Alex
+      xlm: { amount: 10231.5 } // parte de Alex
     };
 
-    const papaXLM = 9190.5;
+    const papaXLM = 10231.5;
+
+    // Distribución familiar corregida
+    const porcentajes = {
+      hijo: 0.8748,
+      papa: 0.1005,
+      mama: 0.022,
+      elena: 0.0027
+    };
 
     async function fetchPrices() {
       const url = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,solana,cardano,ripple,stellar,neo&vs_currencies=usd';
@@ -103,9 +111,9 @@
             `<span class="label">${key.toUpperCase()}:</span> ${amount} × $${price.toFixed(2)} = <strong>$${value.toFixed(2)}</strong>`;
         }
 
-        // Restar Papa_XLM y Alex_XLM del total general (porque se desglosan aparte)
-        const xlmTotalExcluded = (papaXLM + alexHoldings.xlm.amount) * prices.xlm;
-        total -= xlmTotalExcluded;
+        // Restar Papa_XLM y Alex_XLM del total (se desglosan aparte)
+        const xlmExcluded = (papaXLM + alexHoldings.xlm.amount) * prices.xlm;
+        total -= xlmExcluded;
 
         // Calcular Capital de Alex
         let alexTotal = 0;
@@ -115,7 +123,8 @@
           const value = data.amount * livePrice;
 
           if (data.buyPrice) {
-            document.getElementById(key).innerHTML += ` | <span style="color:#0f0;">Compra: ${data.amount} × $${data.buyPrice.toFixed(2)}</span>`;
+            document.getElementById(key).innerHTML +=
+              ` | <span style="color:#0f0;">Compra: ${data.amount} × $${data.buyPrice.toFixed(2)}</span>`;
           }
 
           alexTotal += value;
@@ -124,29 +133,21 @@
         // Calcular Capital Familiar
         const familiarTotal = total - alexTotal;
 
-        // Distribución familiar en porcentajes
-        const porcentajes = {
-          hijo: 0.8748,
-          papa: 0.0887,
-          mama: 0.022,
-          elena: 0.0145
-        };
-
+        // Cálculo por persona
         const hijoMonto = familiarTotal * porcentajes.hijo;
         const papaMonto = familiarTotal * porcentajes.papa;
         const mamaMonto = familiarTotal * porcentajes.mama;
         const elenaMonto = familiarTotal * porcentajes.elena;
 
-        // Mostrar totales
+        // Mostrar resultados
         document.getElementById('total').innerText = `Total (ajustado): $${total.toFixed(2)}`;
         document.getElementById('alex').innerText = `Capital de Alex: $${alexTotal.toFixed(2)}`;
         document.getElementById('familiar').innerText = `Capital Familiar: $${familiarTotal.toFixed(2)}`;
 
-        // Mostrar distribución
         document.getElementById('hijo').innerText = `Hijo (87.48%): $${hijoMonto.toFixed(2)}`;
-        document.getElementById('papa').innerText = `Papá (8.87%): $${papaMonto.toFixed(2)}`;
+        document.getElementById('papa').innerText = `Papá (10.05%): $${papaMonto.toFixed(2)}`;
         document.getElementById('mama').innerText = `Mamá (2.2%): $${mamaMonto.toFixed(2)}`;
-        document.getElementById('elena').innerText = `Elena (1.45%): $${elenaMonto.toFixed(2)}`;
+        document.getElementById('elena').innerText = `Elena (0.27%): $${elenaMonto.toFixed(2)}`;
 
       } catch (error) {
         document.getElementById('total').innerText = 'Error al obtener datos';
