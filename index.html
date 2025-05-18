@@ -58,6 +58,12 @@
     <div class="total" id="familiarTotal"></div>
   </div>
 
+  <div class="section">
+    <div class="section-title">Papá Stellar XLM</div>
+    <div id="papa"></div>
+    <div class="total" id="papaTotal"></div>
+  </div>
+
   <script>
     const holdings = {
       eth: 5.05415,
@@ -83,6 +89,10 @@
       xlm: 139008
     };
 
+    const papaHoldings = {
+      xlm: { amount: 10231.5 }
+    };
+
     async function fetchPrices() {
       const url = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,solana,cardano,ripple,stellar,neo&vs_currencies=usd';
       try {
@@ -105,7 +115,7 @@
         }
         document.getElementById('total').innerText = `Total del portafolio: $${total.toFixed(2)}`;
 
-        // Desglose de Alex
+        // Alex
         let alexHTML = '';
         let alexTotal = 0;
         for (let key in alexHoldings) {
@@ -123,7 +133,7 @@
         document.getElementById('alex').innerHTML = alexHTML;
         document.getElementById('alexTotal').innerText = `Total Alex: $${alexTotal.toFixed(2)}`;
 
-        // Desglose Familiar
+        // Familiar
         let famHTML = '';
         let famTotal = 0;
         for (let key in familiarHoldings) {
@@ -137,6 +147,14 @@
         document.getElementById('familiar').innerHTML = famHTML;
         document.getElementById('familiarTotal').innerText = `Total Familiar: $${famTotal.toFixed(2)}`;
 
+        // Papá Stellar XLM
+        const xlmAmount = papaHoldings.xlm.amount;
+        const xlmPrice = prices.xlm;
+        const xlmValue = xlmAmount * xlmPrice;
+        const papaHTML = `<div class="crypto">XLM: ${xlmAmount} × $${xlmPrice.toFixed(2)} = <strong>$${xlmValue.toFixed(2)}</strong></div>`;
+        document.getElementById('papa').innerHTML = papaHTML;
+        document.getElementById('papaTotal').innerText = `Total Papá XLM: $${xlmValue.toFixed(2)}`;
+
       } catch (error) {
         document.getElementById('total').innerText = 'Error al obtener datos';
         console.error('Error al consultar CoinGecko:', error);
@@ -144,7 +162,7 @@
     }
 
     fetchPrices();
-    setInterval(fetchPrices, 60000); // actualizar cada minuto
+    setInterval(fetchPrices, 60000);
   </script>
 
 </body>
